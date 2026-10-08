@@ -31,6 +31,32 @@ class WordleGame:
                 return modes[choice]
             print("Invalid choice. Please select 1, 2, or 3.")
 
+    def display_history(self):
+        print("History:")
+        for idx, (g, fb) in enumerate(self.history, start=1):
+            print(f"  Attempt {idx}: {g.upper()} -> {' '.join(fb)}")
+
+    def display_summary(self, status):
+        print("\n--- Game Summary ---")
+        print(f"Word length: {self.length}")
+        print(f"Guesses used: {len(self.history)}/{self.max_guesses}")
+        if status == "won":
+            print("Result: Won")
+            print(f"Target word: {self.target}")
+        elif status == "lost":
+            print("Result: Lost")
+            print(f"The word was: {self.target}")
+        elif status == "quit":
+            print("Result: Quit")
+            print(f"The word was: {self.target}")
+
+        if self.history:
+            print("Final History:")
+            for idx, (g, fb) in enumerate(self.history, start=1):
+                print(f"  Attempt {idx}: {g.upper()} -> {' '.join(fb)}")
+        else:
+            print("Final History: None")
+
     def run(self):
         if self.length is None:
             if self.target:
@@ -48,8 +74,10 @@ class WordleGame:
             try:
                 guess = input("> ").strip().lower()
             except (EOFError, KeyboardInterrupt):
+                self.display_summary("quit")
                 return
             if guess == "q":
+                self.display_summary("quit")
                 return
             if len(guess) != self.length or not guess.isalpha():
                 print("Enter a valid word of the required length.")
@@ -57,8 +85,11 @@ class WordleGame:
             feedback = evaluate(self.target, guess)
             self.history.append((guess, feedback))
             print(" ".join(feedback))
+            self.display_history()
             if guess == self.target:
                 print("Solved!")
+                self.display_summary("won")
                 return
         print("Game over! The word was:", self.target)
+        self.display_summary("lost")
 
