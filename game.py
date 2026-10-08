@@ -8,11 +8,15 @@ class WordleGame:
         self.length = length
         self.target = random.choice([w for w in WORDS if len(w) == length])
         self.history = []
+        self.max_guesses = 6
 
     def run(self):
         print(f"Wordle — {self.length} letters, 6 guesses.")
-        for _ in range(6):
-            guess = input("> ").strip().lower()
+        while len(self.history) < self.max_guesses:
+            try:
+                guess = input("> ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                return
             if guess == "q":
                 return
             if len(guess) != self.length or not guess.isalpha():
@@ -24,4 +28,5 @@ class WordleGame:
             if guess == self.target:
                 print("Solved!")
                 return
-        print("The word was:", self.target)
+        print("Game over! The word was:", self.target)
+
